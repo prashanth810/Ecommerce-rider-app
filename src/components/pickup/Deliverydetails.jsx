@@ -21,7 +21,7 @@ import {
     FiShoppingBag,
     FiUser,
 } from "react-icons/fi";
-import DeliveryMap from "./DeliveryMap";
+import DeliveryMap from "./Deliverymap";
 import { RIDER_LOCATION } from "../pickup/demoOrders";
 import { handleresendotp } from "../../services/Serviceapis/DeliveryApi";
 import { haversineKm, isApproximate, formatAccuracy, useAddressOf, useResolvedPoint, useRiderLocation } from "../../hooks/Useriderlocation";

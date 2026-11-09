@@ -11,7 +11,7 @@ import { acceptbooking, acceptpickup, deliverysuccess, getacceptrides, getallord
 import useLiveOrders from "../hooks/useLiveOrders";
 import { riderLogout } from "../redux/Slices/AuthSlice";
 import { RiderRegisterApi } from "../redux/services/Apis";
-import { draft } from "../services/onboardingDraft";
+import { draft } from "../services/Onboardingdraft";
 import "./UiDemo.css";
 
 const ONLINE_KEY = "freshrider_online_v1";
