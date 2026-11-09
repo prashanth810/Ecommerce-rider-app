@@ -311,6 +311,24 @@ select:focus-visible {
     font-size: 13px;
 }
 
+.password-toggle {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 0;
+    background: transparent;
+    color: #85928a;
+    cursor: pointer;
+    padding: 0;
+}
+
+.password-toggle:hover {
+    color: #53a987;
+}
+
 .field-error {
     margin: -6px 0 0;
     color: #a62e2e;
@@ -3802,4 +3820,6 @@ select:focus-visible {
 .terms-row { display: flex; align-items: flex-start; gap: 9px; margin-top: 18px; color: #4d5d53; font-size: 12px; line-height: 1.5; cursor: pointer; }
 .terms-row input { margin-top: 2px; accent-color: #087b55; }
 .auth-notice { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; padding: 11px 13px; border: 1px solid #b7e0c6; border-radius: 10px; background: #effaf3; color: #0d6a44; font-size: 12px; font-weight: 600; }
+.auth-notice--warning { border-color: #fcd34d; background: #fffbeb; color: #92400e; }
+.auth-notice--warning p { font-weight: 400; margin-top: 2px; }
 .step-list .step-link { display: flex; align-items: center; gap: 12px; }

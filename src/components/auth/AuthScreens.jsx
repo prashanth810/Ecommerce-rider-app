@@ -5,6 +5,8 @@ import {
     FiArrowRight,
     FiCheck,
     FiCheckCircle,
+    FiEye,
+    FiEyeOff,
     FiLock,
     FiMail,
     FiMapPin,
@@ -59,11 +61,14 @@ export function LoginScreen({ onContinue }) {
     const { state } = useLocation();
     const [email, setEmail] = useState(state?.email || "");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
+    const [verificationEmail, setVerificationEmail] = useState("");
 
     const submit = async (event) => {
         event.preventDefault();
         setError("");
+        setVerificationEmail("");
 
         const result = await dispatch(handleriderlogin({
             email: email.trim(),
@@ -73,7 +78,17 @@ export function LoginScreen({ onContinue }) {
         if (handleriderlogin.fulfilled.match(result)) {
             onContinue(result.payload.user);
         } else {
-            setError(result.payload || "Login failed. Please check your details and try again.");
+            // The rejection payload is now an object: { message, underVerification, email }
+            const payload = result.payload || {};
+            const message = typeof payload === "string" ? payload : payload.message;
+
+            if (payload.underVerification) {
+                // This specific rider is under admin verification — show a dedicated
+                // notice with their email, not a generic login error.
+                setVerificationEmail(payload.email || email.trim());
+            } else {
+                setError(message || "Login failed. Please check your details and try again.");
+            }
         }
     };
 
@@ -86,6 +101,16 @@ export function LoginScreen({ onContinue }) {
             </p>
 
             {state?.message && <p className="auth-notice" role="status"><FiCheckCircle aria-hidden="true" /> {state.message}</p>}
+
+            {verificationEmail && (
+                <div className="auth-notice auth-notice--warning" role="status">
+                    <FiShield aria-hidden="true" />
+                    <div>
+                        <strong>Your account ({verificationEmail}) is under verification.</strong>
+                        <p>Please wait 24 – 48 hours for admin approval. You'll be able to sign in once verified.</p>
+                    </div>
+                </div>
+            )}
 
             <form
                 className="demo-form"
@@ -110,13 +135,21 @@ export function LoginScreen({ onContinue }) {
                     <FiLock aria-hidden="true" />
                     <input
                         id="login-password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         autoComplete="current-password"
                         placeholder="Enter your password"
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
                         required
                     />
+                    <button
+                        type="button"
+                        className="password-toggle"
+                        onClick={() => setShowPassword((s) => !s)}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                        {showPassword ? <FiEyeOff aria-hidden="true" /> : <FiEye aria-hidden="true" />}
+                    </button>
                 </div>
 
                 {error && <p className="field-error" role="alert">{error}</p>}
@@ -150,6 +183,7 @@ export function RegisterScreen({ onContinue }) {
     const [form, setForm] = useState({ name: "", phone: "", email: "", password: "" });
     const [errors, setErrors] = useState({});
     const [showOtp, setShowOtp] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [showErrorSummary, setShowErrorSummary] = useState(false);
     const submitRef = useRef(null);
     const errorSummaryRef = useRef(null);
@@ -224,7 +258,7 @@ export function RegisterScreen({ onContinue }) {
                 <div className="input-wrap"><FiMail aria-hidden="true" /><input {...fieldProps("email")} type="email" autoComplete="email" placeholder="you@example.com" value={form.email} onChange={set("email")} /></div>
                 {renderError("email")}
                 <label htmlFor="register-password">Password</label>
-                <div className="input-wrap"><FiLock aria-hidden="true" /><input {...fieldProps("password")} type="password" autoComplete="new-password" placeholder="At least 8 characters" value={form.password} onChange={set("password")} /></div>
+                <div className="input-wrap"><FiLock aria-hidden="true" /><input {...fieldProps("password")} type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="At least 8 characters" value={form.password} onChange={set("password")} /><button type="button" className="password-toggle" onClick={() => setShowPassword((s) => !s)} aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <FiEyeOff aria-hidden="true" /> : <FiEye aria-hidden="true" />}</button></div>
                 {renderError("password")}
                 <p className="password-hint">Use at least 8 characters, including uppercase, lowercase, and a number.</p>
                 <button ref={submitRef} className="primary-button auth-submit" type="submit">Register <FiArrowRight /></button>

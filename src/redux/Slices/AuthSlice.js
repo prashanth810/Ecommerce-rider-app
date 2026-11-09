@@ -23,6 +23,17 @@ const getErrorMessage = (error) =>
     error.message ||
     "Login failed. Please try again.";
 
+// Extracts the underVerification flag + email from a 403 backend response so the
+// login screen can show a rider-specific "under verification" notice instead of
+// a generic error that looks like it applies to every rider.
+const getVerificationInfo = (error) => {
+    const data = error?.response?.data;
+    if (data?.underVerification) {
+        return { underVerification: true, email: data.email || "" };
+    }
+    return { underVerification: false, email: "" };
+};
+
 export const handleriderlogin = createAsyncThunk(
     "rider/login",
     async (credentials, { rejectWithValue }) => {
@@ -52,7 +63,11 @@ export const handleriderlogin = createAsyncThunk(
 
             return { token, user, response: body };
         } catch (error) {
-            return rejectWithValue(getErrorMessage(error));
+            const verification = getVerificationInfo(error);
+            return rejectWithValue({
+                message: getErrorMessage(error),
+                ...verification,
+            });
         }
     },
 );
@@ -90,8 +105,11 @@ const AuthSlice = createSlice({
             })
             .addCase(handleriderlogin.rejected, (state, action) => {
                 state.riderlogin.loginloading = false;
+                const payload = action.payload;
                 state.riderlogin.loginerror =
-                    action.payload || action.error.message || "Login failed. Please try again.";
+                    (typeof payload === "string" ? payload : payload?.message) ||
+                    action.error.message ||
+                    "Login failed. Please try again.";
             })
             .addCase(riderLogout.fulfilled, (state) => {
                 state.token = null;
