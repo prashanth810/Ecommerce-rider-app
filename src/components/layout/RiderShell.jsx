@@ -31,7 +31,7 @@ export default function RiderShell({ profile, onLogout, notice, noticeError = fa
     const { pathname } = useLocation();
     const crumb = pathname.startsWith("/delivery") ? "Active delivery" : "Preview mode";
     const navItems = [
-        { to: "/home", label: "Rides", icon: FiMapPin },
+        { to: "/home", label: "Orders", icon: FiMapPin },
         { to: "/dashboard", label: "Overview", icon: FiHome, end: true },
         { to: "/orders", label: "My deliveries", icon: FiPackage },
         { to: "/earnings", label: "Earnings", icon: FiCreditCard },
